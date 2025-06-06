@@ -14,6 +14,8 @@
 
 ## Sistema de facturas Veri*Factu con envío a la AEAT
 
+✔️ Preparado para desarrollo y producción.
+
 ✔️ Permite disponer de múltiples empresas (facturación independiente).
 
 ✔️ Sirve para autónomos, PYMEs o cualquier tipo de empresa.
@@ -43,9 +45,9 @@ Todas las empresas y profesionales obligados a expedir facturas deberán utiliza
 ### Versiones en otros lenguajes:
 - #### [Veri*Factu API (PHP)](https://github.com/EduardoRuizM/verifactu-api-php "Veri*Factu API (PHP)")
 
-## VeriFactuPro:
-- #### 👉 Completo programa de gestión, facturación, ERP con clientes, gastos, productos, stock, OpenAPI/Swagger,  facturas VeriFactu y envío a la AEAT [VeriFactuPro](https://verifactupro.es "VeriFactuPro")
-[![VeriFactuPro](https://verifactupro.es/images/logo.png)](https://verifactupro.es)
+## VeriFactu Pro:
+- #### 👉 Completo programa de gestión, facturación, ERP con clientes, gastos, productos, stock, OpenAPI/Swagger,  facturas VeriFactu y envío a la AEAT [VeriFactu Pro](https://verifactupro.es "VeriFactu Pro")
+[![VeriFactu Pro](https://verifactupro.es/images/logo.png)](https://verifactupro.es)
 
 ## Tipo de facturas y envío
 - **F1**: Factura (art. 6, 7.2 y 7.3 del RD 1619/2012), si se indica en la factura el CIF/NIF (campo vat_id).
