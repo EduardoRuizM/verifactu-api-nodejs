@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `invoices` (
   `fingerprint` varchar(64),
   `verifactu_type` char(2),
   `verifactu_stype` char(1),
-  `verifactu_dt` timestamp,
+  `verifactu_dt` timestamp NULL DEFAULT NULL,
   `verifactu_csv` text,
   `verifactu_err` int(11) unsigned,
   `invoice_ref_id` int(11) unsigned,
