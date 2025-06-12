@@ -204,7 +204,7 @@ FA%y%-%n.6% = FA25-000001
 | fingerprint | Huella | String(64) | 🔍 | - | Huella o hash registro facturación |
 | verifactu_type | Tipo | Char(2) | 🔍 | - | Tipo de factura |
 | verifactu_stype | Tipo | Char(1) | - | - | Subtipo de factura rectificada incremental/sustitución |
-| verifactu_dt | Fecha enviada | TimeStamp | 🔍 | - | Fecha enviada a la AEAT |
+| verifactu_dt | Fecha enviada | TimeStamp | 🔍 | - | Fecha enviada a la AEAT en UTC |
 | verifactu_csv | CSV | Text | - | - | Códigos seguros de verificación de las respuestas |
 | verifactu_err | Respuesta error | Int | - | - | [Error](https://prewww2.aeat.es/static_files/common/internet/dep/aplicaciones/es/aeat/tikeV1.0/cont/ws/errores.properties "Error") de la respuesta o 0 |
 | invoice_ref_id | Referencia factura | Int(➔invoices) | - | - | Factura original en rectificada/sustituida |
@@ -226,8 +226,8 @@ FA%y%-%n.6% = FA25-000001
 
 | 🌍 Endpoint | Método | Acción | Variables GET | Variables POST | Respuesta |
 | --- | --- | --- | --- | --- | --- |
-| **/api/:backend_token/:company_id/:invoices** | GET | Obtener facturas de empresa :company_id | - | - | [{id, company_id, dt, num, name, vat_id, address, postal_code, city, state, country, tvat, bi, total, email, ref, comments, fingerprint, verifactu_type, verifactu_stype, verifactu_dt, verifactu_csv, verifactu_err, invoice_ref_id, voided, number_format}] |
-| **/api/:backend_token/:company_id/invoices/:id** | GET | Obtener factura :id de empresa :company_id | - | - | {id, company_id, dt, num, name, vat_id, address, postal_code, city, state, country, tvat, bi, total, email, ref, comments, fingerprint, verifactu_type, verifactu_stype, verifactu_dt, verifactu_csv, verifactu_err, invoice_ref_id, voided, number_format, lines: [{invoice_id, num, descr, units, price, vat, tvat, bi, total}]} |
+| **/api/:backend_token/:company_id/:invoices** | GET | Obtener facturas de empresa :company_id | - | - | [{id, company_id, dt, num, name, vat_id, address, postal_code, city, state, country, tvat, bi, total, email, ref, comments, fingerprint, verifactu_type, verifactu_stype, verifactu_dt, verifactu_csv, verifactu_err, invoice_ref_id, voided, verifactu_dt_local, number_format}] |
+| **/api/:backend_token/:company_id/invoices/:id** | GET | Obtener factura :id de empresa :company_id | - | - | {id, company_id, dt, num, name, vat_id, address, postal_code, city, state, country, tvat, bi, total, email, ref, comments, fingerprint, verifactu_type, verifactu_stype, verifactu_dt, verifactu_csv, verifactu_err, invoice_ref_id, voided, verifactu_dt_local, number_format, lines: [{invoice_id, num, descr, units, price, vat, tvat, bi, total}]} |
 | **/api/:backend_token/:company_id/invoices/:id/qr** | GET | Obtener código QR de factura :id de empresa :company_id | - | - | Imagen PNG con QR de verificación factura |
 | **/api/:backend_token/:company_id/invoices** | POST | Añadir factura en :company_id | - | {name, vat_id, address, postal_code, city, state, country, email, ref, comments, lines: [{descr, units, price, vat}]} | {id} |
 | **/api/:backend_token/:company_id/invoices/:id/rect** | POST | Factura rectificada R1/R5 incremental en :company_id de factura :id | - | {name, vat_id, address, postal_code, city, state, country, email, ref, comments, lines: [{descr, units, price, vat}]} | {id} |
@@ -239,6 +239,7 @@ FA%y%-%n.6% = FA25-000001
 
 - Campos obligatorios: name y 1 línea de factura con descr y price.
 - Se calcula automáticamente: tvat, bi y total.
+- verifactu_dt_local es la fecha en zona horaria local (definida en verifactu.conf / timezone), por defecto `Europe/Madrid`, de la hora verifactu_dt (UTC)
 
 ## Ejemplos / Tests
 - Ver todas las facturas de empresa 1:
