@@ -111,6 +111,8 @@ const app = backserver({ipv6: cfg.ipv6, url: cfg.backend_url, cert: cfg.backend_
 		.on('listening', address => console.log('Dataclick VeriFactu API', address))
 		.on('error', err => console.error(err));
 
+cfg.timezone = cfg.timezone ?? 'Europe/Madrid';
+
 async function checkAccess(req, res) {
   if(cfg.allow_ip && cfg.allow_ip !== req.ip) {
     req.status = 401;
@@ -145,7 +147,7 @@ app.get('/api/:backend_token/:company_id/query', async (req, res) => {
 
 app.get('/api/:backend_token/:company_id/invoices', async (req, res) => {
   if(await checkAccess(req, res)) {
-    req.content.data = await dbQuery(req, res, 'SELECT * FROM invoices WHERE company_id = ? ORDER BY dt', req.params.company_id);
+    req.content.data = await dbQuery(req, res, "SELECT *, CONVERT_TZ(verifactu_dt, 'UTC', ?) AS verifactu_dt_local FROM invoices WHERE company_id = ? ORDER BY dt", [cfg.timezone, req.params.company_id]);
 
     if(req.content.data)
       req.content.data.forEach(item => item.number_format = verifactu.numFmt(app.company, item));
@@ -154,7 +156,7 @@ app.get('/api/:backend_token/:company_id/invoices', async (req, res) => {
 
 app.get('/api/:backend_token/:company_id/invoices/:id', async (req, res) => {
   if(await checkAccess(req, res)) {
-    let invoice = await getElm(req, res, 'SELECT * FROM invoices WHERE id = ? AND company_id = ?', [req.params.id, req.params.company_id]);
+    let invoice = await getElm(req, res, "SELECT *, CONVERT_TZ(verifactu_dt, 'UTC', ?) AS verifactu_dt_local FROM invoices WHERE id = ? AND company_id = ?", [cfg.timezone, req.params.id, req.params.company_id]);
     if(!invoice)
       return;
 

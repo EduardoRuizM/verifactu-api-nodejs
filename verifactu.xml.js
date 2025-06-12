@@ -80,7 +80,7 @@ class VeriFactuXML {
     let last_fp = last.fingerprint ?? '';
     const data = voided
       ? `IDEmisorFacturaAnulada=${this.cod(company.vat_id)}&NumSerieFacturaAnulada=${this.numFmt(company, invoice)}&FechaExpedicionFacturaAnulada=${this.dt(invoice)}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`
-      : `IDEmisorFactura=${this.cod(company.vat_id)}&NumSerieFactura=${this.numFmt(company, invoice)}&FechaExpedicionFactura=${this.dt(invoice)}&TipoFactura=${invoice.verifactu_type}&CuotaTotal=${invoice.tvat}&ImporteTotal=${invoice.total}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`;
+      : `IDEmisorFactura=${this.cod(company.vat_id)}&NumSerieFactura=${this.numFmt(company, invoice)}&FechaExpedicionFactura=${this.dt(invoice)}&TipoFactura=${invoice.verifactu_type}&CuotaTotal=${Number(invoice.tvat).toFixed(2)}&ImporteTotal=${Number(invoice.total).toFixed(2)}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`;
     return crypto.createHash('sha256').update(data).digest('hex').toUpperCase();
   }
 
@@ -294,6 +294,7 @@ class VeriFactuXML {
 	const csv = resp.CSV;
 	const tiempoEsperaEnvio = resp.TiempoEsperaEnvio;
 	const timestampPresentacion = resp?.DatosPresentacion?.TimestampPresentacion;
+	const dtutc = (new Date(timestampPresentacion || dt)).toISOString().replace('T', ' ').slice(0, 19);
 
 	await this.query('UPDATE companies SET next_send = DATE_ADD(NOW(), INTERVAL ? SECOND) WHERE id = ?', [tiempoEsperaEnvio, company.id]);
 
@@ -314,7 +315,7 @@ class VeriFactuXML {
 	    continue;
 	  }
 
-	  let sql = `UPDATE invoices SET verifactu_dt = "${timestampPresentacion || dt}", verifactu_err = ${+codError}`;
+	  let sql = `UPDATE invoices SET verifactu_dt = "${dtutc}", verifactu_err = ${+codError}`;
 	  if(csv)
 	    sql+= `, verifactu_csv = "${((invoice.verifactu_csv || '') + "\n" + csv).replace(/"/g, '\\"').trim()}"`;
 
