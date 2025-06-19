@@ -80,7 +80,7 @@ class VeriFactuXML {
     let last_fp = last.fingerprint ?? '';
     const data = voided
       ? `IDEmisorFacturaAnulada=${this.cod(company.vat_id)}&NumSerieFacturaAnulada=${this.numFmt(company, invoice)}&FechaExpedicionFacturaAnulada=${this.dt(invoice)}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`
-      : `IDEmisorFactura=${this.cod(company.vat_id)}&NumSerieFactura=${this.numFmt(company, invoice)}&FechaExpedicionFactura=${this.dt(invoice)}&TipoFactura=${invoice.verifactu_type}&CuotaTotal=${Number(invoice.tvat).toFixed(2)}&ImporteTotal=${Number(invoice.total).toFixed(2)}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`;
+      : `IDEmisorFactura=${this.cod(company.vat_id)}&NumSerieFactura=${this.numFmt(company, invoice)}&FechaExpedicionFactura=${this.dt(invoice)}&TipoFactura=${invoice.verifactu_type}&CuotaTotal=${this.cur(invoice.tvat)}&ImporteTotal=${this.cur(invoice.total)}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`;
     return crypto.createHash('sha256').update(data).digest('hex').toUpperCase();
   }
 
