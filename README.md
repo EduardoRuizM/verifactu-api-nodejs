@@ -8,6 +8,8 @@
   <a href="https://sede.agenciatributaria.gob.es/Sede/iva/sistemas-informaticos-facturacion-verifactu.html">Sistemas Informáticos de Facturación (SIF) y VERI✱FACTU</a>
 </p>
 
+<p align="center"><a href="https://github.com/EduardoRuizM/verifactu-api-python"><img src="logo.png" title="Veri*Factu API (Python)" width="256" height="50"></a> <a href="https://github.com/EduardoRuizM/verifactu-api-nodejs"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-nodejs/main/logo.png" title="Veri*F:actu API (NodeJS)" width="256" height="50"></a> <a href="https://github.com/EduardoRuizM/verifactu-api-php"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-php/main/logo.png" title="Veri*Factu API (PHP)" width="256" height="50"></a></p>:
+
 # [Veri*Factu API (NodeJS)](https://github.com/EduardoRuizM/verifactu-api-nodejs "Veri*Factu API (NodeJS)")
 
 ![NodeJS](https://img.shields.io/badge/Node.js%2016%2B-6DA55F?logo=node.js&logoColor=white) [![JuNe BackServer](https://img.shields.io/badge/JuNe-BackServer-FCB91A)](https://github.com/EduardoRuizM/june-backserver) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=fff) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -43,6 +45,7 @@ Todas las empresas y profesionales obligados a expedir facturas deberán utiliza
 - Incluir en las facturas un código QR que permita a los destinatarios identificarla y verificar su autenticidad.
 
 ### Versiones en otros lenguajes:
+- #### [Veri*Factu API (Python)](https://github.com/EduardoRuizM/verifactu-api-python "Veri*Factu API (Python)")
 - #### [Veri*Factu API (PHP)](https://github.com/EduardoRuizM/verifactu-api-php "Veri*Factu API (PHP)")
 
 ## VeriFactu Pro:
@@ -493,7 +496,7 @@ server {
 
 	location / {
 		proxy_set_header	X-Forwarded-For $remote_addr;
-		proxy_set_header	Host $http_host;
+		proxy_set_header	Host $host;
 		proxy_pass		http://127.0.0.1:8023; # Ajusta la URL del backend
 	}
 }
