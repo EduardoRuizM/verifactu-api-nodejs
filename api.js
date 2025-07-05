@@ -1,5 +1,5 @@
 //
-// =============== Veri*Factu API 1.0.0 ===============
+// =============== Veri*Factu API 1.0.2 ===============
 //
 // Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/verifactu-api-nodejs
@@ -245,9 +245,9 @@ app.post('/api/:backend_token/:company_id/invoices/:id/rect', async (req, res) =
 
   const invoices = await dbQuery(req, res, 'SELECT * FROM invoices WHERE id IN(?) AND company_id = ?', [req.params.id, req.params.company_id]);
   for(const invoice of invoices) {
-    if(!(invoice.verifactu_type == 'F1' || invoice.verifactu_type == 'F2') || invoice.invoice_ref_id || invoice.voided) {
+    if(!(['F1', 'F2', 'F3'].includes(invoice.verifactu_type)) || invoice.invoice_ref_id || invoice.voided) {
       req.status = 401;
-      req.content.error = 'Not type F1/F2, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
+      req.content.error = 'Not type F1/F2/F3, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
     }
   }
 
@@ -266,9 +266,9 @@ app.post('/api/:backend_token/:company_id/invoices/:id/rect2', async (req, res) 
 
   const invoices = await dbQuery(req, res, 'SELECT * FROM invoices WHERE id IN(?) AND company_id = ?', [req.params.id, req.params.company_id]);
   for(const invoice of invoices) {
-    if(invoice.verifactu_type != 'F1' || invoice.invoice_ref_id || invoice.voided) {
+    if(!(['F1', 'F3'].includes(invoice.verifactu_type)) || invoice.invoice_ref_id || invoice.voided) {
       req.status = 401;
-      req.content.error = 'Not type F1, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
+      req.content.error = 'Not type F1/F3, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
     }
   }
 
@@ -287,9 +287,9 @@ app.post('/api/:backend_token/:company_id/invoices/:id/rectsust', async (req, re
 
   const invoices = await dbQuery(req, res, 'SELECT * FROM invoices WHERE id IN(?) AND company_id = ?', [req.params.id, req.params.company_id]);
   for(const invoice of invoices) {
-    if(!(invoice.verifactu_type == 'F1' || invoice.verifactu_type == 'F2') || invoice.invoice_ref_id || invoice.voided) {
+    if(!(['F1', 'F2', 'F3', 'R1', 'R5'].includes(invoice.verifactu_type)) || invoice.invoice_ref_id || invoice.voided) {
       req.status = 401;
-      req.content.error = 'Not type F1/F2, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
+      req.content.error = 'Not type F1/F2/F3/R1/R5, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
     }
   }
 
