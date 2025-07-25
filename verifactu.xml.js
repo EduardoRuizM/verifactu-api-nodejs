@@ -1,5 +1,5 @@
 //
-// =============== Veri*Factu API 1.0.2 ===============
+// =============== Veri*Factu API 1.0.3 ===============
 //
 // Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/verifactu-api-nodejs
@@ -118,11 +118,16 @@ class VeriFactuXML {
 		`<FechaExpedicionFactura>${this.dt(rinvoice)}</FechaExpedicionFactura>` + tag2;
       }
       if(invoice.verifactu_stype === 'S') {
+	let bi_total = 0;
+	let tvat_total = 0;
 	for(const rinvoice of rinvoices) {
 	  let lines = await this.query('SELECT vat, SUM(bi) AS bi, SUM(tvat) AS tvat FROM invoice_lines WHERE invoice_id = ? GROUP BY vat', rinvoice.id);
-	  for(let line of lines)
-	    xml+= `<ImporteRectificacion><BaseRectificada>${this.cur(line.bi)}</BaseRectificada><CuotaRectificada>${this.cur(line.tvat)}</CuotaRectificada></ImporteRectificacion>`;
+	  for(let line of lines) {
+	    bi_total+= Number(line.bi ?? 0);
+	    tvat_total+= Number(line.tvat ?? 0);
+	  }
 	}
+	xml+= `<ImporteRectificacion><BaseRectificada>${this.cur(bi_total)}</BaseRectificada><CuotaRectificada>${this.cur(tvat_total)}</CuotaRectificada></ImporteRectificacion>`;
       }
     }
 
