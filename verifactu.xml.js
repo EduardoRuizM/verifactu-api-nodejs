@@ -1,5 +1,5 @@
 //
-// =============== Veri*Factu API 1.0.3 ===============
+// =============== Veri*Factu API 1.0.4 ===============
 //
 // Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/verifactu-api-nodejs
@@ -71,7 +71,7 @@ class VeriFactuXML {
 
   // Última factura enviada a la AEAT
   async lastInvoice(company) {
-    let invoice = await this.query('SELECT * FROM invoices WHERE company_id = ? AND fingerprint IS NOT NULL ORDER BY verifactu_dt DESC', company.id);
+    let invoice = await this.query('SELECT * FROM invoices WHERE company_id = ? AND fingerprint IS NOT NULL ORDER BY verifactu_dt DESC, id DESC', company.id);
     return invoice?.[0];
   }
 
