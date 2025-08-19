@@ -1,5 +1,5 @@
 //
-// =============== Veri*Factu API 1.0.4 ===============
+// =============== Veri*Factu API 1.0.5 ===============
 //
 // Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/verifactu-api-nodejs
@@ -160,7 +160,7 @@ class VeriFactuXML {
     xml+= `</Desglose><CuotaTotal>${this.cur(invoice.tvat)}</CuotaTotal><ImporteTotal>${this.cur(invoice.total)}</ImporteTotal>`;
 
     xml+= `<Encadenamiento>${(last)
-      ? `<RegistroAnterior><IDEmisorFactura>${this.cod(company.vat_id)}</IDEmisorFactura><NumSerieFactura>${this.numFmt(company, last)}</NumSerieFactura><FechaExpedicionFactura>${this.dt(last)}` +
+      ? `<RegistroAnterior><IDEmisorFactura>${this.cod(company.vat_id)}</IDEmisorFactura><NumSerieFactura>${last.numFmt}</NumSerieFactura><FechaExpedicionFactura>${this.dt(last)}` +
 	`</FechaExpedicionFactura><Huella>${last.fingerprint}</Huella></RegistroAnterior>`
       : `<PrimerRegistro>S</PrimerRegistro>`
     }</Encadenamiento>${this.sistemaInformatico()}<FechaHoraHusoGenRegistro>${dt}</FechaHoraHusoGenRegistro>` +
@@ -181,7 +181,7 @@ class VeriFactuXML {
                    ${(invoice.verifactu_err) ? '<RechazoPrevio>S</RechazoPrevio>' : ''}`;
 
     xml+= `<Encadenamiento>${(last)
-      ? `<RegistroAnterior><IDEmisorFactura>${this.cod(company.vat_id)}</IDEmisorFactura><NumSerieFactura>${this.numFmt(company, last)}</NumSerieFactura><FechaExpedicionFactura>${this.dt(last)}` +
+      ? `<RegistroAnterior><IDEmisorFactura>${this.cod(company.vat_id)}</IDEmisorFactura><NumSerieFactura>${last.numFmt}</NumSerieFactura><FechaExpedicionFactura>${this.dt(last)}` +
 	`</FechaExpedicionFactura><Huella>${last.fingerprint}</Huella></RegistroAnterior>`
       : `<PrimerRegistro>S</PrimerRegistro>`
     }</Encadenamiento>${this.sistemaInformatico()}<FechaHoraHusoGenRegistro>${dt}</FechaHoraHusoGenRegistro>` +
@@ -256,13 +256,19 @@ class VeriFactuXML {
                        </ObligadoEmision>
                      </sum:Cabecera>`;
 
-    const last = await this.lastInvoice(company);
+    let chain = await this.lastInvoice(company);
+    chain = (chain) ? {numFmt: this.numFmt(company, chain), dt: chain.dt, fingerprint: chain.fingerprint} : null;
+
     for(const invoice of invoices) {
 
+      const fp = this.fingerprint(company, invoice, chain, dt, voided);
+      invoice._prev = chain;
+      chain = {numFmt: this.numFmt(company, invoice), dt: invoice.dt, fingerprint: fp};
+
       if(voided)
-	xml+= this.RegistroAnulacion(company, invoice, last, dt);
+	xml+= this.RegistroAnulacion(company, invoice, invoice._prev, dt);
       else
-	xml+= await this.RegistroAlta(company, invoice, last, dt);
+	xml+= await this.RegistroAlta(company, invoice, invoice._prev, dt);
     }
 
     xml+= `    </sum:RegFactuSistemaFacturacion>
