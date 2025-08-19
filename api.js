@@ -1,5 +1,5 @@
 //
-// =============== Veri*Factu API 1.0.3 ===============
+// =============== Veri*Factu API 1.0.4 ===============
 //
 // Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/verifactu-api-nodejs
