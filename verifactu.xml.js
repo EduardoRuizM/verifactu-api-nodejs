@@ -331,7 +331,7 @@ class VeriFactuXML {
 	    sql+= `, verifactu_csv = "${((invoice.verifactu_csv || '') + "\n" + csv).replace(/"/g, '\\"').trim()}"`;
 
 	  if(timestampPresentacion)
-	    sql+= ', fingerprint = "' + this.fingerprint(company, invoice, last, timestampPresentacion, voided) + '"';
+	    sql+= ', fingerprint = "' + this.fingerprint(company, invoice, invoice._prev, timestampPresentacion, voided) + '"';
 
 	  if(!codError && voided)
 	    sql+= ', voided = 1';
