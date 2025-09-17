@@ -30,7 +30,7 @@
 
 ✔️ Numeración de facturas personalizado.
 
-✔️ Consulta de registros enviados a la AEAT.
+✔️ Consulta de registros enviados a la AEAT por fechas.
 
 # Autor
 [Eduardo Ruiz](https://github.com/EduardoRuizM) <<eruiz@dataclick.es>>
