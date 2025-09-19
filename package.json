@@ -1,6 +1,6 @@
 {
   "name": "verifactu-api-nodejs",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "Eduardo Ruiz <eruiz@dataclick.es> (https://www.dataclick.es)",
   "description": "Sistema de facturas Veri*Factu con envío a la AEAT",
   "keywords": [
