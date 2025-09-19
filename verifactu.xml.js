@@ -134,8 +134,6 @@ class VeriFactuXML {
     }
 
     xml+=  `<DescripcionOperacion>${descr}</DescripcionOperacion>`;
-    if(invoice.verifactu_type === 'F2')
-      xml+= '    <FacturaSimplificadaArt7273>S</FacturaSimplificadaArt7273>';
 
     if(!invoice.vat_id)
       xml+= '    <FacturaSinIdentifDestinatarioArt61d>S</FacturaSinIdentifDestinatarioArt61d>';
