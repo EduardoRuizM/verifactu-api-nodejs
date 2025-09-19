@@ -1,5 +1,5 @@
 //
-// =============== Veri*Factu API 1.0.5 ===============
+// =============== Veri*Factu API 1.0.6 ===============
 //
 // Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/verifactu-api-nodejs
@@ -108,23 +108,25 @@ class VeriFactuXML {
       if(invoice.verifactu_stype)
 	xml+= `<TipoRectificativa>${(invoice.verifactu_stype === 'S') ? 'S' : 'I'}</TipoRectificativa>`;
 
-      const tag1 = (invoice.verifactu_type === 'F3') ? '<FacturasSustituidas><IDFacturaSustituida>' : '<FacturasRectificadas><IDFacturaRectificada>';
-      const tag2 = (invoice.verifactu_type === 'F3') ? '</IDFacturaSustituida></FacturasSustituidas>' : '</IDFacturaRectificada></FacturasRectificadas>';
-
-      let rinvoices = await this.query('SELECT * FROM invoices WHERE invoice_ref_id = ? ORDER BY dt', invoice.id);
-      for(const rinvoice of rinvoices) {
-	xml+=	tag1 + `<IDEmisorFactura>${this.cod(company.vat_id)}</IDEmisorFactura>` +
+      let rinvoices = await this.query('SELECT * FROM invoices WHERE id = ? ORDER BY dt', invoice.invoice_ref_id);
+      if(rinvoices) {
+	xml+= (invoice.verifactu_type === 'F3') ? '<FacturasSustituidas>' : '<FacturasRectificadas>';
+	const tag = (invoice.verifactu_type === 'F3') ? 'IDFacturaSustituida' : 'IDFacturaRectificada';
+	for(const rinvoice of rinvoices) {
+	  xml+=	`<${tag}><IDEmisorFactura>${this.cod(company.vat_id)}</IDEmisorFactura>` +
 		`<NumSerieFactura>${this.numFmt(company, rinvoice)}</NumSerieFactura>` +
-		`<FechaExpedicionFactura>${this.dt(rinvoice)}</FechaExpedicionFactura>` + tag2;
+		`<FechaExpedicionFactura>${this.dt(rinvoice)}</FechaExpedicionFactura></${tag}>`;
+	}
+	xml+= (invoice.verifactu_type === 'F3') ? '</FacturasSustituidas>' : '</FacturasRectificadas>';
       }
       if(invoice.verifactu_stype === 'S') {
 	let bi_total = 0;
 	let tvat_total = 0;
 	for(const rinvoice of rinvoices) {
-	  let lines = await this.query('SELECT vat, SUM(bi) AS bi, SUM(tvat) AS tvat FROM invoice_lines WHERE invoice_id = ? GROUP BY vat', rinvoice.id);
-	  for(let line of lines) {
-	    bi_total+= Number(line.bi ?? 0);
-	    tvat_total+= Number(line.tvat ?? 0);
+	  let totals = await this.query('SELECT SUM(bi) AS bi, SUM(tvat) AS tvat FROM invoice_lines WHERE invoice_id = ?', rinvoice.id);
+	  if(totals) {
+	    bi_total+= Number(totals[0].bi ?? 0);
+	    tvat_total+= Number(totals[0].tvat ?? 0);
 	  }
 	}
 	xml+= `<ImporteRectificacion><BaseRectificada>${this.cur(bi_total)}</BaseRectificada><CuotaRectificada>${this.cur(tvat_total)}</CuotaRectificada></ImporteRectificacion>`;

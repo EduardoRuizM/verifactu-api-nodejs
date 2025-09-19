@@ -1,5 +1,5 @@
 //
-// =============== Veri*Factu API 1.0.5 ===============
+// =============== Veri*Factu API 1.0.6 ===============
 //
 // Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/verifactu-api-nodejs
@@ -166,7 +166,7 @@ app.get('/api/:backend_token/:company_id/invoices/:id', async (req, res) => {
   }
 });
 
-async function insertInvoice(req, res, type, refs = null, stype = null) {
+async function insertInvoice(req, res, type, ref = null, stype = null) {
   if(!app.checkParams({name: 'name'})) {
     if(req.content.message) {
       req.content.error = req.content.message;
@@ -196,13 +196,13 @@ async function insertInvoice(req, res, type, refs = null, stype = null) {
     return;
   }
 
-  if(await dbQuery(req, res,	'INSERT INTO invoices SET company_id = ?, dt = CURRENT_TIMESTAMP, num = ?, name = ?, vat_id = ?, address = ?, postal_code = ?, ' +
-				'city = ?, state = ?, country = ?, tvat = ?, bi = ?, total = ?, email = ?, ref = ?, comments = ?, verifactu_type = ?, verifactu_stype = ?',
+  if(await dbQuery(req, res,	'INSERT INTO invoices SET company_id = ?, dt = CURRENT_TIMESTAMP, num = ?, name = ?, vat_id = ?, address = ?, postal_code = ?, city = ?, ' +
+				'state = ?, country = ?, tvat = ?, bi = ?, total = ?, email = ?, ref = ?, comments = ?, verifactu_type = ?, verifactu_stype = ?, invoice_ref_id = ?',
 				[req.params.company_id, await nextNum(type), req.body.name.trim(), (req.body.vat_id) ? verifactu.cod(req.body.vat_id) : null,
 				(req.body.address) ? req.body.address.trim() : null, (req.body.postal_code) ? req.body.postal_code.trim() : null,
 				(req.body.city) ? req.body.city.trim() : null, (req.body.state) ? req.body.state.trim() : null, req.body.country,
 				tvat, bi, total, (req.body.email) ? req.body.email.trim() : null, (req.body.ref) ? req.body.ref.trim() : null,
-				(req.body.comments) ? req.body.comments.trim() : null, type, stype])) {
+				(req.body.comments) ? req.body.comments.trim() : null, type, stype, ref])) {
 
     let id = await lastId();
     let num = 0;
@@ -218,11 +218,6 @@ async function insertInvoice(req, res, type, refs = null, stype = null) {
 			[id, num, line.descr, line.units, line.price, line.vat, tvat, bi, total]);
     });
 
-    if(refs) {
-      for(const ref of refs)
-	await query('UPDATE invoices SET invoice_ref_id = ? WHERE id = ?', [id, ref.id]);
-    }
-
     req.status = 201;
     req.content.id = id;
   }
@@ -237,84 +232,56 @@ app.post('/api/:backend_token/:company_id/invoices/:id/rect', async (req, res) =
   if(!await checkAccess(req, res))
     return;
 
-  if(!req.params.id || !/^\d+(,\d+)*$/.test(req.params.id)) {
-    req.status = 404;
-    req.content.error = 'Not found id(s)';
+  const invoice = await getElm(req, res, 'SELECT * FROM invoices WHERE id = ? AND company_id = ?', [req.params.id, req.params.company_id]);
+  if(!invoice || !(['F1', 'F2', 'F3'].includes(invoice.verifactu_type)) || invoice.voided) {
+    req.status = 401;
+    req.content.error = 'Not exists, not type F1/F2/F3 or voided: ' + verifactu.numFmt(app.company, invoice);
     return;
   }
 
-  const invoices = await dbQuery(req, res, 'SELECT * FROM invoices WHERE id IN(?) AND company_id = ?', [req.params.id, req.params.company_id]);
-  for(const invoice of invoices) {
-    if(!(['F1', 'F2', 'F3'].includes(invoice.verifactu_type)) || invoice.invoice_ref_id || invoice.voided) {
-      req.status = 401;
-      req.content.error = 'Not type F1/F2/F3, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
-    }
-  }
-
-  await insertInvoice(req, res, (req.body.vat_id) ? 'R1' : 'R5', invoices, 'I');
+  await insertInvoice(req, res, (req.body.vat_id) ? 'R1' : 'R5', invoice.id, 'I');
 });
 
 app.post('/api/:backend_token/:company_id/invoices/:id/rect2', async (req, res) => {
   if(!await checkAccess(req, res))
     return;
 
-  if(!req.params.id || !/^\d+(,\d+)*$/.test(req.params.id)) {
-    req.status = 404;
-    req.content.error = 'Not found id(s)';
+  const invoice = await getElm(req, res, 'SELECT * FROM invoices WHERE id = ? AND company_id = ?', [req.params.id, req.params.company_id]);
+  if(!invoice || !(['F1', 'F3'].includes(invoice.verifactu_type)) || invoice.voided) {
+    req.status = 401;
+    req.content.error = 'Not exists, not type F1/F3 or voided: ' + verifactu.numFmt(app.company, invoice);
     return;
   }
 
-  const invoices = await dbQuery(req, res, 'SELECT * FROM invoices WHERE id IN(?) AND company_id = ?', [req.params.id, req.params.company_id]);
-  for(const invoice of invoices) {
-    if(!(['F1', 'F3'].includes(invoice.verifactu_type)) || invoice.invoice_ref_id || invoice.voided) {
-      req.status = 401;
-      req.content.error = 'Not type F1/F3, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
-    }
-  }
-
-  await insertInvoice(req, res, 'R2', invoices, 'I');
+  await insertInvoice(req, res, 'R2', invoice.id, 'I');
 });
 
 app.post('/api/:backend_token/:company_id/invoices/:id/rectsust', async (req, res) => {
   if(!await checkAccess(req, res))
     return;
 
-  if(!req.params.id || !/^\d+(,\d+)*$/.test(req.params.id)) {
-    req.status = 404;
-    req.content.error = 'Not found id(s)';
+  const invoice = await getElm(req, res, 'SELECT * FROM invoices WHERE id = ? AND company_id = ?', [req.params.id, req.params.company_id]);
+  if(!invoice || !(['F1', 'F2', 'F3', 'R1', 'R5'].includes(invoice.verifactu_type)) || invoice.voided) {
+    req.status = 401;
+    req.content.error = 'Not exists, not type F1/F2/F3/R1/R5 or voided: ' + verifactu.numFmt(app.company, invoice);
     return;
   }
 
-  const invoices = await dbQuery(req, res, 'SELECT * FROM invoices WHERE id IN(?) AND company_id = ?', [req.params.id, req.params.company_id]);
-  for(const invoice of invoices) {
-    if(!(['F1', 'F2', 'F3', 'R1', 'R5'].includes(invoice.verifactu_type)) || invoice.invoice_ref_id || invoice.voided) {
-      req.status = 401;
-      req.content.error = 'Not type F1/F2/F3/R1/R5, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
-    }
-  }
-
-  await insertInvoice(req, res, (req.body.vat_id) ? 'R1' : 'R5', invoices, 'S');
+  await insertInvoice(req, res, (req.body.vat_id) ? 'R1' : 'R5', invoice.id, 'S');
 });
 
 app.post('/api/:backend_token/:company_id/invoices/:id/sust', async (req, res) => {
   if(!await checkAccess(req, res))
     return;
 
-  if(!req.params.id || !/^\d+(,\d+)*$/.test(req.params.id)) {
-    req.status = 404;
-    req.content.error = 'Not found id(s)';
+  const invoice = await getElm(req, res, 'SELECT * FROM invoices WHERE id = ? AND company_id = ?', [req.params.id, req.params.company_id]);
+  if(!invoice || invoice.verifactu_type != 'F2' || invoice.voided) {
+    req.status = 401;
+    req.content.error = 'Not exists, not type F2 or voided: ' + verifactu.numFmt(app.company, invoice);
     return;
   }
 
-  const invoices = await dbQuery(req, res, 'SELECT * FROM invoices WHERE id IN(?) AND company_id = ?', [req.params.id, req.params.company_id]);
-  for(const invoice of invoices) {
-    if(invoice.verifactu_type != 'F2' || invoice.invoice_ref_id || invoice.voided) {
-      req.status = 401;
-      req.content.error = 'Not type F2, already referenced or voided: ' + verifactu.numFmt(app.company, invoice);
-    }
-  }
-
-  await insertInvoice(req, res, 'F3', invoices);
+  await insertInvoice(req, res, 'F3', invoice.id);
 });
 
 app.get('/api/:backend_token/:company_id/invoices/:id/qr', async (req, res) => {
@@ -344,6 +311,7 @@ app.put('/api/:backend_token/:company_id/invoices/:id/voided', async (req, res) 
     if(invoice.voided || !invoice.verifactu_dt || invoice.invoice_ref_id) {
       req.status = 401;
       req.content.error = 'Already voided, not sent or referenced: ' + verifactu.numFmt(app.company, invoice);
+      return;
     }
   }
 
