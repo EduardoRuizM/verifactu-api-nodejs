@@ -61,7 +61,7 @@ Todas las empresas y profesionales obligados a expedir facturas deberán utiliza
 - **R5**: Factura rectificativa en facturas simplificadas.
 - **S1**: Operaciones sujetas y no exentas - sin inversión del sujeto pasivo, facturas con IVA con identificación del emisor y el destinatario.
 - El envío a la AEAT se hace mediante un certificado **PKCS#12** de la FNMT de [persona física](https://www.sede.fnmt.gob.es/certificados/persona-fisica "persona física") o [persona jurídica](https://www.sede.fnmt.gob.es/certificados/certificado-de-representante/persona-juridica "persona jurídica").
-- Envío hasta el máximo permitido de 1000 facturas.
+- Envío cada vez hasta el máximo permitido de 1000 facturas.
 - Control de espera entre envíos según el TiempoEsperaEnvio facilitado por la AEAT.
 
 ## Identificación sistema informático
