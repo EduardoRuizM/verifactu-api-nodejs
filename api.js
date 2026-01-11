@@ -123,7 +123,7 @@ async function checkAccess(req, res) {
   // Comprobar token
   if(!cfg.backend_token || cfg.backend_token !== req.params.backend_token) {
     req.status = 401;
-    req.content.error = 'Missing or wrong token' + cfg.backend_token;
+    req.content.error = 'Missing or wrong token';
     return false;
   }
 
