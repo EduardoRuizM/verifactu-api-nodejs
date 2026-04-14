@@ -77,7 +77,7 @@ class VeriFactuXML {
 
   // Obtener huella de la factura
   fingerprint(company, invoice, last, dt, voided = false) {
-    let last_fp = last.fingerprint ?? '';
+    let last_fp = last?.fingerprint ?? '';
     const data = voided
       ? `IDEmisorFacturaAnulada=${this.cod(company.vat_id)}&NumSerieFacturaAnulada=${this.numFmt(company, invoice)}&FechaExpedicionFacturaAnulada=${this.dt(invoice)}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`
       : `IDEmisorFactura=${this.cod(company.vat_id)}&NumSerieFactura=${this.numFmt(company, invoice)}&FechaExpedicionFactura=${this.dt(invoice)}&TipoFactura=${invoice.verifactu_type}&CuotaTotal=${this.cur(invoice.tvat)}&ImporteTotal=${this.cur(invoice.total)}&Huella=${last_fp}&FechaHoraHusoGenRegistro=${dt}`;
@@ -439,12 +439,12 @@ class VeriFactuXML {
 	    if(log && this.save_responses && fs.existsSync(this.save_responses) && fs.statSync(this.save_responses).isDirectory())
 	      fs.writeFileSync(this.save_responses + '/resp_' + this.dtnow() + '.xml', data);
 
-	    resolve({status: status, response: data});
+	    resolve({status: 0, response: data});
  	  });
 	});
 
 	req.on('error', err => {
-	  reject({status: status, error: err});
+	  reject({status: 0, response: '', error: err});
 	});
 
 	req.write(xml);

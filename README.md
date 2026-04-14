@@ -8,7 +8,7 @@
   <a href="https://sede.agenciatributaria.gob.es/Sede/iva/sistemas-informaticos-facturacion-verifactu.html">Sistemas Informáticos de Facturación (SIF) y VERI✱FACTU</a>
 </p>
 
-<p align="center"><a href="https://github.com/EduardoRuizM/verifactu-api-python"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-python/main/logo.png" title="Veri*Factu API (Python)" width="256" height="50"></a> <a href="https://github.com/EduardoRuizM/verifactu-api-nodejs"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-nodejs/main/logo.png" title="Veri*F:actu API (NodeJS)" width="256" height="50"></a> <a href="https://github.com/EduardoRuizM/verifactu-api-php"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-php/main/logo.png" title="Veri*Factu API (PHP)" width="256" height="50"></a></p>
+<p align="center"><a href="https://github.com/EduardoRuizM/verifactu-api-python"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-python/main/logo.png" title="Veri*Factu API (Python)" width="256" height="50"></a> <a href="https://github.com/EduardoRuizM/verifactu-api-nodejs"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-nodejs/main/logo.png" title="Veri*F:actu API (NodeJS)" width="256" height="50"></a> <a href="https://github.com/EduardoRuizM/verifactu-api-php"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-php/main/logo.png" title="Veri*Factu API (PHP)" width="256" height="50"></a> <a href="https://github.com/EduardoRuizM/verifactu-api-go"><img src="https://raw.githubusercontent.com/EduardoRuizM/verifactu-api-go/main/logo.png" title="Veri*Factu API (Go)" width="256" height="50"></a></p>
 
 # [Veri*Factu API (NodeJS)](https://github.com/EduardoRuizM/verifactu-api-nodejs "Veri*Factu API (NodeJS)")
 
@@ -47,6 +47,7 @@ Todas las empresas y profesionales obligados a expedir facturas deberán utiliza
 ### Versiones en otros lenguajes:
 - #### [Veri*Factu API (Python)](https://github.com/EduardoRuizM/verifactu-api-python "Veri*Factu API (Python)")
 - #### [Veri*Factu API (PHP)](https://github.com/EduardoRuizM/verifactu-api-php "Veri*Factu API (PHP)")
+- #### [Veri*Factu API (Go)](https://github.com/EduardoRuizM/verifactu-api-go "Veri*Factu API Go")
 
 ## VeriFactu Pro:
 - #### 👉 Completo programa de gestión, facturación, ERP con clientes, gastos, productos, stock, OpenAPI/Swagger,  facturas VeriFactu y envío a la AEAT [VeriFactu Pro](https://verifactupro.es "VeriFactu Pro")
@@ -91,6 +92,7 @@ Se crearán las tablas necesarias y una empresa de prueba.
 | mysql_user | String | ✔ | - | MySQL usuario |
 | mysql_password | String | ✔ | - | MySQL contraseña |
 | mysql_database | String | ✔ | - | MySQL nombre base de datos |
+| timezone | String | - | Europe/Madrid | Zona horaria |
 | backend_url | String | - | http://localhost:8023 | Dirección/puerto de la API |
 | backend_cert | String | - | - | Ruta/Archivo certificado para HTTPS |
 | backend_key | String | - | - | Ruta/Archivo clave privada para HTTPS |
